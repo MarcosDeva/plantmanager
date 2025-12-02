@@ -1,8 +1,31 @@
-import React from 'react';
+import { useEffect } from 'react';
+import { 
+  Jost_400Regular, 
+  Jost_600SemiBold, 
+  useFonts
+}  from '@expo-google-fonts/jost';
+import * as SplashScreen from 'expo-splash-screen';
 import { Welcome } from './src/pages/Welcome';
 
-export default function App(){
+SplashScreen.preventAutoHideAsync();
+
+export default function App() {
+  const [loaded, error] = useFonts({
+      Jost_400Regular, 
+      Jost_600SemiBold,
+  });
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+
   return (
-      <Welcome />
+    <Welcome />
   )
 }
