@@ -5,7 +5,7 @@ import {
   useFonts
 }  from '@expo-google-fonts/jost';
 import * as SplashScreen from 'expo-splash-screen';
-import { Welcome } from './src/pages/Welcome';
+import Routes from './src/routes';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,6 +26,6 @@ export default function App() {
   }
 
   return (
-    <Welcome />
+    <Routes />
   )
 }
