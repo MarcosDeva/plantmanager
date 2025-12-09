@@ -9,36 +9,78 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Header } from '../components/Header';
 import { EnviromentButton } from '../components/EnviromentButton';
+import { PlantCardPrimary } from '../components/PlantCardPrimary';
 
-import api from '../service/api';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
+
 
 interface EnviromentProps {
     key: string;
     title: string;
 }
 
+interface PlantsProps {
+      id: string;
+      name: string;
+      about: string;
+      water_tips: string;
+      photo: string;
+      environments: [string];
+      frequency: {
+        times: number;
+        repeat_every: string;
+      }
+}
+
 export function PlantSelect(){
     const[enviroments, setEnviroments] = useState<EnviromentProps[]>([]);
-  
-    useEffect(() => {
-        // async function fetchEnviroment() {
-        //     const { data } = await api.get('/plants_enviroments');
-        //     setEnviroments(data);
-        //     console.log(data);
-        // }
-        async function fetchEnviroment() {
-            try{
-                const { data } = await api.get('/plants_enviroments');
-                setEnviroments(data);
-            } catch (err){
-                console.log('Erro na API,',err);
-            }
-        }
-        fetchEnviroment();
+    const[plants, setPlants] = useState<PlantsProps[]>([]);
+    const[filteredPlants, setFilteredPlants] = useState<PlantsProps[]>([]);
+    const[enviromentSelected, setEnviromentSelected] = useState('all');
 
-    },[])
+    function handleEnviromentSelected(environment: string){
+        setEnviromentSelected(environment);
+
+        if(environment === 'all')
+            return setFilteredPlants(plants);
+        const filtered = plants.filter(plant =>
+            plant.environments.includes(environment)
+        );
+
+        setFilteredPlants(filtered);
+    }
+
+    useEffect(() => {
+        fetch('http://192.168.0.164:3000/plants-environments')
+            .then((response) => response.json())
+            .then((data) => {
+                setEnviroments([
+                    {
+                        key: 'all',
+                        title: 'Todos',
+                    },
+                    ...data
+                ]);
+            })
+            .catch((err) => {
+                console.log(err.message);
+            });
+    }, []);
+
+
+    useEffect(() => {
+            fetch('http://192.168.0.164:3000/plants')
+                .then((response) => response.json())
+                .then((data) => {
+                    // console.log(data);
+                    setPlants(data);
+                })
+                .catch((err) => {
+                    console.log(err.message);
+                });
+    }, []);
+
 
 
     return(
@@ -55,20 +97,33 @@ export function PlantSelect(){
                      você quer colocar sua planta?
                 </Text>
             </View>
+            
             <View>
                 <FlatList
                     data={enviroments} 
-                    keyExtractor={(item) => item.key}
                     renderItem={( {item}) => (
                         <EnviromentButton 
                             title={item.title} 
-                            active
+                            active={item.key === enviromentSelected}
+                            onPress={()=> handleEnviromentSelected(item.key)}
                         />
                     )}
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    //sempre que for uma Flat list e assim que deve ser passado o css
                     contentContainerStyle={styles.enviromentList}
+                />
+            </View>
+
+            <View style={styles.plants}>
+                <FlatList 
+                    data={filteredPlants}
+                    renderItem={({ item }) => (
+                        <PlantCardPrimary 
+                            data={item}
+                        />
+                    )}
+                    showsVerticalScrollIndicator={false}
+                    numColumns={2}
                 />
             </View>
             
@@ -107,6 +162,13 @@ const styles =  StyleSheet.create({
         marginLeft: 32,
         marginVertical: 32
     },
+    plants: {
+        flex: 1,
+        paddingHorizontal: 32,
+        justifyContent: 'center'
+    },
+    plantsContainer: {},
+
     content: {},
     footer: {},
 });
