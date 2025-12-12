@@ -46,14 +46,6 @@ export function PlantCardPrimary ({
 
 const styles = StyleSheet.create({
     container: {
-        // flex: 1,
-        // maxWidth: '45%',
-        // backgroundColor: colors.shape,
-        // borderRadius: 20,
-        // paddingVertical: 10,
-        // alignItems: 'center',
-        // margin: 10
-
         flex: 1,
         maxWidth: '100%',
         height: 154,
