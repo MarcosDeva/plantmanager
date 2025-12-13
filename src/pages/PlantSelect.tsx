@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../components/Header';
 import { EnviromentButton } from '../components/EnviromentButton';
 import { PlantCardPrimary } from '../components/PlantCardPrimary';
+import { Load } from '../components/Load';
 
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
@@ -38,6 +39,8 @@ export function PlantSelect(){
     const[plants, setPlants] = useState<PlantsProps[]>([]);
     const[filteredPlants, setFilteredPlants] = useState<PlantsProps[]>([]);
     const[enviromentSelected, setEnviromentSelected] = useState('all');
+    const[loading, setLoading] = useState(true);
+
 
     function handleEnviromentSelected(environment: string){
         setEnviromentSelected(environment);
@@ -52,7 +55,9 @@ export function PlantSelect(){
     }
 
     useEffect(() => {
-        fetch('http://192.168.0.164:3000/plants-environments')
+        async function fetchEnviroment(){
+
+            fetch('http://192.168.0.164:3000/plants-environments')
             .then((response) => response.json())
             .then((data) => {
                 setEnviroments([
@@ -66,23 +71,33 @@ export function PlantSelect(){
             .catch((err) => {
                 console.log(err.message);
             });
+
+        }
+        fetchEnviroment();
+        
     }, []);
 
 
     useEffect(() => {
-            fetch('http://192.168.0.164:3000/plants')
+            async function fetchPlants() {
+                 fetch('http://192.168.0.164:3000/plants')
                 .then((response) => response.json())
                 .then((data) => {
                     // console.log(data);
                     setPlants(data);
+                    setFilteredPlants(data);
+                    setLoading(false);
                 })
                 .catch((err) => {
                     console.log(err.message);
                 });
+            }
+        fetchPlants();     
     }, []);
 
 
-
+    if(loading)
+        return <Load />
     return(
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
