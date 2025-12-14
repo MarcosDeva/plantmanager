@@ -40,6 +40,11 @@ export function PlantSelect(){
     const[filteredPlants, setFilteredPlants] = useState<PlantsProps[]>([]);
     const[enviromentSelected, setEnviromentSelected] = useState('all');
     const[loading, setLoading] = useState(true);
+    
+    // segue o curso la que essa parta não da para usar 
+    // const [page, setPage] =  useState(1);
+    // const [loadingMore, setLoadingMore] =  useState(false);
+    // const [loadedAll, setLoadedAll] =  useState(false);
 
 
     function handleEnviromentSelected(environment: string){
