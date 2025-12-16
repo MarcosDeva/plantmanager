@@ -1,0 +1,46 @@
+# start projet
+yarn init -y
+
+
+// Install typescript as a development dependency. 
+// You also need the type definitions for Node.js (@types/node) so TypeScript understands Node.js specific APIs.
+yarn add typescript @types/node --dev 
+
+// Install Express and type definitions:
+// Install express and its corresponding type definitions (@types/express).
+yarn add express @types/express
+
+// Initialize TypeScript configuration:
+// This command creates a tsconfig.json file, which is the configuration file for your TypeScript project.
+npx tsc --init
+
+
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "rootDir": "./src",           /* Specify the root directory of source files. */
+    "outDir": "./dist",           /* Specify an output directory for compiled content. */
+    "esModuleInterop": true,      /* Enables interoperability between CommonJS and ES modules. */
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"]
+}
+
+// For a better development experience with automatic restarts (hot reloading), you can install nodemon and ts-node (which runs TypeScript code directly) as dev dependencies.
+yarn add nodemon ts-node --dev
+
+
+// Then, update your dev script in package.json to use nodemon and ts-node:
+"scripts": {
+  "build": "tsc",
+  "start": "node dist/server.js",
+  "dev": "nodemon src/server.ts"
+},
+
+
+// Run your application:
+// You can now run your server in development mode using the defined script.
+yarn dev
