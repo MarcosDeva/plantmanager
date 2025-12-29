@@ -14,6 +14,7 @@ import { Load } from '../components/Load';
 
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
+import { isDisabled } from 'react-native/types_generated/Libraries/LogBox/Data/LogBoxData';
 
 
 interface EnviromentProps {
@@ -41,10 +42,9 @@ export function PlantSelect(){
     const[enviromentSelected, setEnviromentSelected] = useState('all');
     const[loading, setLoading] = useState(true);
     
-    // segue o curso la que essa parta não da para usar 
-    // const [page, setPage] =  useState(1);
-    // const [loadingMore, setLoadingMore] =  useState(false);
-    // const [loadedAll, setLoadedAll] =  useState(false);
+    const [page, setPage] =  useState(1);
+    const [loadingMore, setLoadingMore] =  useState(false);
+    const [loadedAll, setLoadedAll] =  useState(false);
 
 
     function handleEnviromentSelected(environment: string){
@@ -58,6 +58,42 @@ export function PlantSelect(){
 
         setFilteredPlants(filtered);
     }
+
+    async function fetchPlants() {
+                 fetch(`http://192.168.0.164:3000/plants/page/${page}/limit/5`)
+                .then((response) => response.json())
+                .then((data) => {
+
+                    if(!data)
+                        // return setLoading(true);
+                    
+                    if(page > 1 ){
+                        
+                        setPlants(oldValue => [...oldValue, ...data])
+                        setFilteredPlants(oldValue => [...oldValue, ...data])
+                    } else {
+                        setPlants(data);
+                        setFilteredPlants(data);
+                    }
+                   
+                    // setLoading(false);
+                    setLoadingMore(false);
+                })
+                .catch((err) => {
+                    console.log(err.message);
+                });
+    }
+
+    function handleFetchMore(distance: number){
+        if(distance < 1)
+            return;
+        // setLoadingMore(true);
+        setPage(oldValue => oldValue + 1 );
+        fetchPlants();
+
+    }
+
+    
 
     useEffect(() => {
         async function fetchEnviroment(){
@@ -80,24 +116,6 @@ export function PlantSelect(){
         }
         fetchEnviroment();
         
-    }, []);
-
-
-    useEffect(() => {
-            async function fetchPlants() {
-                 fetch('http://192.168.0.164:3000/plants')
-                .then((response) => response.json())
-                .then((data) => {
-                    // console.log(data);
-                    setPlants(data);
-                    setFilteredPlants(data);
-                    setLoading(false);
-                })
-                .catch((err) => {
-                    console.log(err.message);
-                });
-            }
-        fetchPlants();     
     }, []);
 
 
@@ -144,6 +162,10 @@ export function PlantSelect(){
                     )}
                     showsVerticalScrollIndicator={false}
                     numColumns={2}
+                    onEndReachedThreshold={0.1}
+                    onEndReached={({ distanceFromEnd }) => 
+                        handleFetchMore(distanceFromEnd) 
+                    }
                 />
             </View>
             
