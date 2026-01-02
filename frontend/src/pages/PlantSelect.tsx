@@ -3,7 +3,8 @@ import {
     View,
     Text,
     StyleSheet,
-    FlatList
+    FlatList,
+    ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -14,8 +15,6 @@ import { Load } from '../components/Load';
 
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
-import { isDisabled } from 'react-native/types_generated/Libraries/LogBox/Data/LogBoxData';
-
 
 interface EnviromentProps {
     key: string;
@@ -40,12 +39,10 @@ export function PlantSelect(){
     const[plants, setPlants] = useState<PlantsProps[]>([]);
     const[filteredPlants, setFilteredPlants] = useState<PlantsProps[]>([]);
     const[enviromentSelected, setEnviromentSelected] = useState('all');
+    // Estado para indicar se os dados estão sendo carregados
     const[loading, setLoading] = useState(true);
-    
-    const [page, setPage] =  useState(1);
     const [loadingMore, setLoadingMore] =  useState(false);
-    const [loadedAll, setLoadedAll] =  useState(false);
-
+    const [page, setPage] =  useState(1);
 
     function handleEnviromentSelected(environment: string){
         setEnviromentSelected(environment);
@@ -60,23 +57,19 @@ export function PlantSelect(){
     }
 
     async function fetchPlants() {
-                 fetch(`http://192.168.0.164:3000/plants/page/${page}/limit/5`)
+                 fetch(`http://192.168.0.164:3000/plants/page/${page}/limit/8`)
                 .then((response) => response.json())
                 .then((data) => {
 
-                    if(!data)
-                        // return setLoading(true);
-                    
-                    if(page > 1 ){
-                        
+                    if(page > 1){
                         setPlants(oldValue => [...oldValue, ...data])
                         setFilteredPlants(oldValue => [...oldValue, ...data])
-                    } else {
+                    }else {
                         setPlants(data);
                         setFilteredPlants(data);
                     }
-                   
-                    // setLoading(false);
+        
+                    setLoading(false);
                     setLoadingMore(false);
                 })
                 .catch((err) => {
@@ -84,16 +77,15 @@ export function PlantSelect(){
                 });
     }
 
-    function handleFetchMore(distance: number){
+    function handleFetchMore(distance: number) {
+
         if(distance < 1)
             return;
-        // setLoadingMore(true);
-        setPage(oldValue => oldValue + 1 );
+
+        setLoadingMore(true);
+        setPage(oldValue => oldValue + 1);
         fetchPlants();
-
     }
-
-    
 
     useEffect(() => {
         async function fetchEnviroment(){
@@ -118,6 +110,9 @@ export function PlantSelect(){
         
     }, []);
 
+    useEffect(() =>{
+        fetchPlants();
+    }, []);
 
     if(loading)
         return <Load />
@@ -155,6 +150,7 @@ export function PlantSelect(){
             <View style={styles.plants}>
                 <FlatList 
                     data={filteredPlants}
+                    keyExtractor={(item) => String(item.id)}
                     renderItem={({ item }) => (
                         <PlantCardPrimary 
                             data={item}
@@ -164,8 +160,15 @@ export function PlantSelect(){
                     numColumns={2}
                     onEndReachedThreshold={0.1}
                     onEndReached={({ distanceFromEnd }) => 
-                        handleFetchMore(distanceFromEnd) 
+                        handleFetchMore(distanceFromEnd)
                     }
+
+                    ListFooterComponent={
+                        loadingMore 
+                        ? <ActivityIndicator color={colors.green} />
+                        : <></>
+                    }
+
                 />
             </View>
             
