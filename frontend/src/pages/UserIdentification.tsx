@@ -7,9 +7,11 @@ import {
     StyleSheet,
     Platform,
     TouchableWithoutFeedback,
-    Keyboard
+    Keyboard,
+    Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from  '@react-native-async-storage/async-storage';
 import { Button } from '../components/Button';
 import { useNavigation } from '@react-navigation/native';
 
@@ -38,7 +40,11 @@ export function UserIdentification() {
         setName(value);
     }
 
-    function handleSubmit(){
+    async function handleSubmit(){
+        if(!name)
+            return Alert.alert('Me diz como chamar você 😅');
+        //@+nome do app seguido : do nome da info que quer salvar
+        await AsyncStorage.setItem('@plantmanager:user', name);
         navigation.navigate("Confirmation");
     }
 
