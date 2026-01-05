@@ -7,7 +7,7 @@ import {
     ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { useNavigation } from '@react-navigation/native';
 import { Header } from '../components/Header';
 import { EnviromentButton } from '../components/EnviromentButton';
 import { PlantCardPrimary } from '../components/PlantCardPrimary';
@@ -43,6 +43,15 @@ export function PlantSelect(){
     const[loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] =  useState(false);
     const [page, setPage] =  useState(1);
+
+    const navigation = useNavigation<any>();
+   
+    function handlePlantSelect(plant: PlantsProps){
+        /**
+         * aqui ele passa para o plant save a planta que foi capiturada ao selecionar 
+         */
+        navigation.navigate('PlantSave', { plant });
+    }
 
     function handleEnviromentSelected(environment: string){
         setEnviromentSelected(environment);
@@ -155,6 +164,7 @@ export function PlantSelect(){
                     renderItem={({ item }) => (
                         <PlantCardPrimary 
                             data={item}
+                            onPress={()=> handlePlantSelect(item)}
                         />
                     )}
                     showsVerticalScrollIndicator={false}
