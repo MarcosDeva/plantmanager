@@ -9,35 +9,28 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Header } from '../components/Header';
+import { PlantProps } from '../libs/storage';
 import { EnviromentButton } from '../components/EnviromentButton';
 import { PlantCardPrimary } from '../components/PlantCardPrimary';
 import { Load } from '../components/Load';
 
+
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
+
 
 interface EnviromentProps {
     key: string;
     title: string;
 }
 
-interface PlantsProps {
-      id: string;
-      name: string;
-      about: string;
-      water_tips: string;
-      photo: string;
-      environments: [string];
-      frequency: {
-        times: number;
-        repeat_every: string;
-      }
-}
-
 export function PlantSelect(){
+    const baseUrl = "192.168.0.164:3000";
+    // const baseUrl = "192.168.0.174:3000";
+    
     const[enviroments, setEnviroments] = useState<EnviromentProps[]>([]);
-    const[plants, setPlants] = useState<PlantsProps[]>([]);
-    const[filteredPlants, setFilteredPlants] = useState<PlantsProps[]>([]);
+    const[plants, setPlants] = useState<PlantProps[]>([]);
+    const[filteredPlants, setFilteredPlants] = useState<PlantProps[]>([]);
     const[enviromentSelected, setEnviromentSelected] = useState('all');
     // Estado para indicar se os dados estão sendo carregados
     const[loading, setLoading] = useState(true);
@@ -46,7 +39,7 @@ export function PlantSelect(){
 
     const navigation = useNavigation<any>();
    
-    function handlePlantSelect(plant: PlantsProps){
+    function handlePlantSelect(plant: PlantProps){
         /**
          * aqui ele passa para o plant save a planta que foi capiturada ao selecionar 
          */
@@ -66,7 +59,7 @@ export function PlantSelect(){
     }
 
     async function fetchPlants() {
-                 fetch(`http://192.168.0.164:3000/plants/page/${page}/limit/8`)
+                 fetch(`http://${baseUrl}/plants/page/${page}/limit/8`)
                 .then((response) => response.json())
                 .then((data) => {
 
@@ -99,7 +92,7 @@ export function PlantSelect(){
     useEffect(() => {
         async function fetchEnviroment(){
 
-            fetch('http://192.168.0.164:3000/plants-environments')
+            fetch(`http://${baseUrl}/plants-environments`)
             .then((response) => response.json())
             .then((data) => {
                 setEnviroments([

@@ -43,9 +43,13 @@ export function UserIdentification() {
     async function handleSubmit(){
         if(!name)
             return Alert.alert('Me diz como chamar você 😅');
-        //@+nome do app seguido : do nome da info que quer salvar
-        await AsyncStorage.setItem('@plantmanager:user', name);
-        navigation.navigate("Confirmation");
+        try{
+            await AsyncStorage.setItem('@plantmanager:user', name);
+            navigation.navigate("Confirmation");
+        }catch{
+            Alert.alert("Não Possivel salvar o seu nome");
+        }
+        
     }
 
     return (
