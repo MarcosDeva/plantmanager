@@ -4,13 +4,14 @@ import  {
     View,
     Text,
     Image,
-    FlatList
+    FlatList,
+    Alert
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../components/Header';
 import { PlantCardSecondary } from '../components/PlantCardSecondary';
-import { loadPlant, PlantProps } from '../libs/storage';
+import { loadPlant, PlantProps, removePlant } from '../libs/storage';
 import waterdrop from '../assets/waterdrop.png';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
@@ -23,6 +24,32 @@ export function MyPlants(){
     const [myPlants, setMyPlants] = useState<PlantProps[]>([]);
     const [loading, setLoading] = useState(true);
     const [nextWaterd, setNextWatered] = useState<string>();
+
+    function handleRemove(plant:PlantProps){
+        Alert.alert('Remover',`Deseja remover a ${plant.name}?`,[
+            {
+                text: 'Não 🙏',
+                style: 'cancel'
+            },
+            {
+                text: 'Sim 😢',
+                onPress: async () => {
+                    try {
+                        
+                        await removePlant(plant.id);
+
+                        setMyPlants((oldData) => (
+                            oldData.filter((item) => item.id != plant.id)
+                        ));
+
+
+                    } catch (error: any){
+                        Alert.alert('Não foi possivel remover! 😢');
+                    }
+                }
+            }
+        ])
+    }
 
     useEffect(() => {
         async function loadStorageData() {
@@ -71,7 +98,7 @@ export function MyPlants(){
                     renderItem={({ item }) => (
                        <PlantCardSecondary 
                             data={item} 
-                            // handleRemove={() => {handleRemove(item)}}
+                            handleRemove={() => {handleRemove(item)}}
                         />
                     )}
                     showsVerticalScrollIndicator={false}
