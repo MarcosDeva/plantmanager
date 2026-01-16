@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+
+import Routes from './src/routes';
+
 import { 
   Jost_400Regular, 
   Jost_600SemiBold, 
   useFonts
 }  from '@expo-google-fonts/jost';
-import * as SplashScreen from 'expo-splash-screen';
-import Routes from './src/routes';
 
 SplashScreen.preventAutoHideAsync();
 
