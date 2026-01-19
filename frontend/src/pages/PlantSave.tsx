@@ -14,7 +14,7 @@ import DateTimePicker, { Event } from '@react-native-community/datetimepicker';
 import { format, isBefore } from 'date-fns';
 
 import { SvgFromUri } from 'react-native-svg';
-import { loadPlant, PlantProps, savePlant } from '../libs/storage';
+import { PlantProps, savePlant } from '../libs/storage';
 import { Button } from '../components/Button';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -123,7 +123,6 @@ export function PlantSave(){
                             mode="time"
                             display="spinner"
                             onChange={() => handleChangeTime}
-
                         />
                 )}
                     
