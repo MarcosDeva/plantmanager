@@ -13,25 +13,31 @@ import {
 
 SplashScreen.preventAutoHideAsync();
 
-function useNotificationObserver(){
-
-      const subscription = Notifications.addNotificationResponseReceivedListener( async response => {
-        const data = response.notification.request.content.data.plant as PlantProps;
-        console.log(data);
-      });
-  //  const subscription =  Notifications.addNotificationResponseReceivedListener(
-  //     async notification => {
-  //       const data =  notification.request.content.data.plant as PlantProps;
-  //       console.log(data);
-  //     }
-  //   )
-}
+// function useNotificationObserver(){
+//       const subscription = Notifications.addNotificationResponseReceivedListener( 
+//         async response => {
+//           const data = response.notification.request.content.data.plant as PlantProps;
+//           console.log(data);
+//       }
+//     );
+//     return () => subscription.remove();
+// }
 
 export default function App() {
   const [loaded, error] = useFonts({
       Jost_400Regular, 
       Jost_600SemiBold,
   });
+
+  useEffect(() =>{
+    const subscription = Notifications.addNotificationResponseReceivedListener( 
+      async response => {
+          const data = response.notification.request.content.data.plant as PlantProps;
+          console.log(data);
+      }
+    );
+    return () => subscription.remove();
+  },[])
 
   useEffect(() => {
     if (loaded || error) {
@@ -43,7 +49,7 @@ export default function App() {
     return null;
   }
 
-  useNotificationObserver();
+  // useNotificationObserver();
 
   return (
     <Routes />
