@@ -1,3 +1,6 @@
+executa o projeto
+npm run dev
+
 # start projet
 yarn init -y
 
