@@ -8,7 +8,8 @@ import {
     Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Feather } from '@expo/vector-icons';
+import { Feather } from '@react-native-vector-icons/feather';
+
 
 import wateringImg from '../assets/watering.png';
 import colors from '../styles/colors';

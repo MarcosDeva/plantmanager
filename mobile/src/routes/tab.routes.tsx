@@ -2,7 +2,7 @@ import React from 'react';
 import {} from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import colors from '../styles/colors';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@react-native-vector-icons/material-icons';
 import { PlantSelect } from '../pages/PlantSelect';
 import { MyPlants } from '../pages/MyPlants';
 

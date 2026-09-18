@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
+
 import * as Notifications from 'expo-notifications';
 
 import Routes from './src/routes';
@@ -13,15 +14,15 @@ import {
 
 SplashScreen.preventAutoHideAsync();
 
-// function useNotificationObserver(){
-//       const subscription = Notifications.addNotificationResponseReceivedListener( 
-//         async response => {
-//           const data = response.notification.request.content.data.plant as PlantProps;
-//           console.log(data);
-//       }
-//     );
-//     return () => subscription.remove();
-// }
+function useNotificationObserver(){
+      const subscription = Notifications.addNotificationResponseReceivedListener( 
+        async response => {
+          const data = response.notification.request.content.data.plant as PlantProps;
+          console.log(data);
+      }
+    );
+    return () => subscription.remove();
+}
 
 export default function App() {
   const [loaded, error] = useFonts({

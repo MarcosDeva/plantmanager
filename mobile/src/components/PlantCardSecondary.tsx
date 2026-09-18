@@ -3,8 +3,6 @@ import {
     StyleSheet,
     View,
     Text,
-    Image,
-    TouchableOpacityProps,
     Animated
 } from 'react-native';
 import { GestureHandlerRootView, RectButton, RectButtonProps } from 'react-native-gesture-handler';
@@ -13,7 +11,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { SvgFromUri } from 'react-native-svg';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
-import { Feather } from '@expo/vector-icons';
+import { Feather } from '@react-native-vector-icons/feather';
 
 interface PlantProps extends RectButtonProps {
     data: {

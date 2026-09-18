@@ -13,8 +13,10 @@ import { Header } from '../components/Header';
 import { PlantCardSecondary } from '../components/PlantCardSecondary';
 import { loadPlant, PlantProps, removePlant } from '../libs/storage';
 import waterdrop from '../assets/waterdrop.png';
+
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
+
 import { formatDistance } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { Load } from '../components/Load';
