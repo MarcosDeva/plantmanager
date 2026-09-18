@@ -1,0 +1,223 @@
+import React, { useEffect, useState } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+    ActivityIndicator
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { Header } from '../components/Header';
+import { PlantProps } from '../libs/storage';
+import { EnviromentButton } from '../components/EnviromentButton';
+import { PlantCardPrimary } from '../components/PlantCardPrimary';
+import { Load } from '../components/Load';
+
+
+import colors from '../styles/colors';
+import fonts from '../styles/fonts';
+
+
+interface EnviromentProps {
+    key: string;
+    title: string;
+}
+
+export function PlantSelect(){
+    const baseUrl = "192.168.0.164:3000";
+    // const baseUrl = "192.168.0.174:3000";
+    
+    const[enviroments, setEnviroments] = useState<EnviromentProps[]>([]);
+    const[plants, setPlants] = useState<PlantProps[]>([]);
+    const[filteredPlants, setFilteredPlants] = useState<PlantProps[]>([]);
+    const[enviromentSelected, setEnviromentSelected] = useState('all');
+    // Estado para indicar se os dados estão sendo carregados
+    const[loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] =  useState(false);
+    const [page, setPage] =  useState(1);
+
+    const navigation = useNavigation<any>();
+   
+    function handlePlantSelect(plant: PlantProps){
+        /**
+         * aqui ele passa para o plant save a planta que foi capiturada ao selecionar 
+         */
+        navigation.navigate('PlantSave', { plant });
+    }
+
+    function handleEnviromentSelected(environment: string){
+        setEnviromentSelected(environment);
+
+        if(environment === 'all')
+            return setFilteredPlants(plants);
+        const filtered = plants.filter(plant =>
+            plant.environments.includes(environment)
+        );
+
+        setFilteredPlants(filtered);
+    }
+
+    async function fetchPlants() {
+                 fetch(`http://${baseUrl}/plants/page/${page}/limit/8`)
+                .then((response) => response.json())
+                .then((data) => {
+
+                    if(page > 1){
+                        setPlants(oldValue => [...oldValue, ...data])
+                        setFilteredPlants(oldValue => [...oldValue, ...data])
+                    }else {
+                        setPlants(data);
+                        setFilteredPlants(data);
+                    }
+        
+                    setLoading(false);
+                    setLoadingMore(false);
+                })
+                .catch((err) => {
+                    console.log(err.message);
+                });
+    }
+
+    function handleFetchMore(distance: number) {
+
+        if(distance < 1)
+            return;
+
+        setLoadingMore(true);
+        setPage(oldValue => oldValue + 1);
+        fetchPlants();
+    }
+
+    useEffect(() => {
+        async function fetchEnviroment(){
+
+            fetch(`http://${baseUrl}/plants-environments`)
+            .then((response) => response.json())
+            .then((data) => {
+                setEnviroments([
+                    {
+                        key: 'all',
+                        title: 'Todos',
+                    },
+                    ...data
+                ]);
+            })
+            .catch((err) => {
+                console.log(err.message);
+            });
+
+        }
+        fetchEnviroment();
+        
+    }, []);
+
+    useEffect(() =>{
+        fetchPlants();
+    }, []);
+
+    if(loading)
+        return <Load />
+    return(
+        <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+
+                <Header />
+            
+                <Text style={styles.title}>
+                    Em qual hambiente 
+                </Text>
+
+                <Text style={styles.subtitle}>
+                     você quer colocar sua planta?
+                </Text>
+            </View>
+            
+            <View>
+                <FlatList
+                    data={enviroments} 
+                    keyExtractor={(item) => String(item.key)}
+                    renderItem={( {item}) => (
+                        <EnviromentButton 
+                            title={item.title} 
+                            active={item.key === enviromentSelected}
+                            onPress={()=> handleEnviromentSelected(item.key)}
+                        />
+                    )}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.enviromentList}
+                />
+            </View>
+
+            <View style={styles.plants}>
+                <FlatList 
+                    data={filteredPlants}
+                    keyExtractor={(item) => String(item.id)}
+                    renderItem={({ item }) => (
+                        <PlantCardPrimary 
+                            data={item}
+                            onPress={()=> handlePlantSelect(item)}
+                        />
+                    )}
+                    showsVerticalScrollIndicator={false}
+                    numColumns={2}
+                    onEndReachedThreshold={0.1}
+                    onEndReached={({ distanceFromEnd }) => 
+                        handleFetchMore(distanceFromEnd)
+                    }
+
+                    ListFooterComponent={
+                        loadingMore 
+                        ? <ActivityIndicator color={colors.green} />
+                        : <></>
+                    }
+
+                />
+            </View>
+            
+        </SafeAreaView>
+      
+    )
+}
+
+const styles =  StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: colors.background
+    },
+    header: {
+        paddingHorizontal: 30
+    },
+    title: {
+        fontFamily: fonts.heading,
+        fontSize: 17,
+        color: colors.heading,
+        lineHeight: 20,
+        marginTop: 15
+    },
+    subtitle: {
+        fontSize: 17,
+        color:  colors.heading,
+        fontFamily: fonts.text,
+        lineHeight: 20,
+        
+     
+    },
+    enviromentList: {
+        height: 40,
+        justifyContent: 'center',
+        paddingBottom: 5,
+        marginLeft: 32,
+        marginVertical: 32
+    },
+    plants: {
+        flex: 1,
+        paddingHorizontal: 32,
+        justifyContent: 'center'
+    },
+    plantsContainer: {},
+
+    content: {},
+    footer: {},
+});
